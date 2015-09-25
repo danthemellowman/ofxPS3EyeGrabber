@@ -28,11 +28,13 @@
 
 void ofApp::setup()
 {
-    ofSetVerticalSync(false);
+    ofSetVerticalSync(true);
 
-	camWidth = 320;
-	camHeight = 240;
-    camFrameRate = 60;
+    ofxXmlSettings settings;
+    settings.load("settings.xml");
+	camWidth = settings.getValue("settings:camWidth", 640);
+	camHeight = settings.getValue("settings:camHeight", 480);
+    camFrameRate = settings.getValue("settings:camFrameRate", 30);;
 
     //we can now get back a list of devices.
     std::vector<ofVideoDevice> devices = ofxPS3EyeGrabber().listDevices();
@@ -54,11 +56,15 @@ void ofApp::setup()
             videoGrabber->setDeviceID(i);
             videoGrabber->setDesiredFrameRate(camFrameRate);
             videoGrabber->initGrabber(camWidth, camHeight);
-
+//            videoGrabber->setAutogain(true);
+//            videoGrabber->setAutoWhiteBalance(true);
             videoGrabbers.push_back(videoGrabber);
 
             // Add a texture.
             videoTextures.push_back(ofTexture());
+ 
+            server.push_back(new ofxSyphonServer());
+            server.back()->setName(ofToString(i));
         }
 
         ofLogNotice("ofApp::setup") << ss.str();
@@ -77,6 +83,7 @@ void ofApp::update()
         if (videoGrabbers[i]->isFrameNew())
         {
             videoTextures[i].loadData(videoGrabbers[i]->getPixelsRef());
+            server[i]->publishTexture(&videoTextures[i]);
         }
     }
 }

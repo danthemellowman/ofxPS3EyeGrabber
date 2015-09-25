@@ -28,7 +28,8 @@
 
 #include "ofMain.h"
 #include "ofxPS3EyeGrabber.h"
-
+#include "ofxSyphon.h"
+#include "ofxXmlSettings.h"
 
 class ofApp: public ofBaseApp
 {
@@ -44,5 +45,8 @@ public:
     int camWidth;
     int camHeight;
     int camFrameRate;
+
+    vector<ofxSyphonServer*> server;
+
 
 };
